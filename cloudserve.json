@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "CloudServe Intelligent Support System",
+    "output": "cloudserve-archify.html",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "ingest-classify", "label": "1. Ingestion & Classification", "focus": ["users", "api", "ingest", "classify"], "note": "All multi-channel tickets arrive via the API and are strictly typed before intent classification." },
+      { "id": "semantic-retrieval", "label": "2. Semantic Retrieval", "focus": ["classify", "retrieve", "kb", "route"], "note": "The pipeline pulls the highest cosine-similarity chunks from the 29 KB articles for the router to evaluate." },
+      { "id": "guardrails-audit", "label": "3. Guardrails & Governance", "focus": ["route", "generate", "guardrails", "human", "audit_log"], "note": "Every single path (Pass, PII Blocked, or Redline Escalation) converges perfectly into the 1:1 Audit Store." }
+    ]
+  },
+  "components": [
+    { "id": "users", "type": "external", "label": "Users", "sublabel": "Email, Chat, Forum", "pos": [40, 300], "size": [120, 60] },
+    { "id": "api", "type": "backend", "label": "FastAPI Server", "sublabel": "POST /tickets", "pos": [250, 300], "size": [130, 60] },
+    { "id": "ingest", "type": "backend", "label": "Ingestion", "sublabel": "src/ingest.py", "pos": [460, 300], "size": [130, 60] },
+    { "id": "classify", "type": "backend", "label": "Classification", "sublabel": "src/classify.py", "pos": [670, 300], "size": [130, 60], "tag": "LLM" },
+    { "id": "retrieve", "type": "backend", "label": "Retrieval", "sublabel": "src/retrieve.py", "pos": [880, 300], "size": [130, 60] },
+    { "id": "kb", "type": "database", "label": "Vector DB", "sublabel": "Docs Chunks", "pos": [880, 150], "size": [130, 60] },
+    { "id": "route", "type": "backend", "label": "Routing Engine", "sublabel": "src/route.py", "pos": [1090, 300], "size": [130, 60], "tag": "tau=0.55" },
+    { "id": "generate", "type": "backend", "label": "Generation", "sublabel": "src/generate.py", "pos": [1300, 300], "size": [130, 60], "tag": "Grounded" },
+    { "id": "guardrails", "type": "security", "label": "Guardrails", "sublabel": "src/guardrails.py", "pos": [1510, 300], "size": [130, 60], "tag": "PII / Redlines" },
+    { "id": "human", "type": "external", "label": "Human Agent", "sublabel": "Tier-3 Support", "pos": [1090, 500], "size": [130, 60] },
+    { "id": "audit_log", "type": "database", "label": "Audit Store", "sublabel": "SQLite / JSONL", "pos": [1300, 650], "size": [130, 60] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Support Pipeline Graph", "wraps": ["ingest", "classify", "retrieve", "route", "generate", "guardrails"] }
+  ],
+  "connections": [
+    { "id": "user-req", "from": "users", "to": "api", "label": "Request", "variant": "emphasis" },
+    { "id": "api-ingest", "from": "api", "to": "ingest" },
+    { "id": "ingest-class", "from": "ingest", "to": "classify" },
+    { "id": "class-ret", "from": "classify", "to": "retrieve" },
+    { "id": "ret-kb", "from": "retrieve", "to": "kb", "label": "Cosine Sim", "variant": "dashed", "fromSide": "top", "toSide": "bottom", "labelDy": -60 },
+    { "id": "ret-route", "from": "retrieve", "to": "route" },
+    { "id": "route-gen", "from": "route", "to": "generate", "label": "auto_respond" },
+    { "id": "route-esc", "from": "route", "to": "human", "label": "escalate", "variant": "security", "fromSide": "bottom", "toSide": "top", "labelDy": 60 },
+    { "id": "gen-guard", "from": "generate", "to": "guardrails" },
+    { "id": "guard-pass", "from": "guardrails", "to": "audit_log", "label": "Pass", "fromSide": "bottom", "toSide": "top" },
+    { "id": "guard-fail", "from": "guardrails", "to": "human", "label": "PII Blocked", "variant": "security", "fromSide": "bottom", "toSide": "right", "via": [[1575, 530], [1220, 530]], "labelDx": 50 },
+    { "id": "esc-log", "from": "human", "to": "audit_log", "label": "Log", "fromSide": "right", "toSide": "left" }
+  ]
+}
