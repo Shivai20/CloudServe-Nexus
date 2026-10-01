@@ -1,8 +1,8 @@
 # Core Dependencies
-langchain==0.1.0
-langgraph==0.0.20
-langchain-community==0.0.10
-langchain-openai==0.0.7
+langchain>=0.1.0
+langgraph>=0.0.20
+langchain-community>=0.0.10
+langchain-openai>=0.0.7
 
 # Vector Database & Embeddings
 chromadb==0.3.21
