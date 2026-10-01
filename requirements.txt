@@ -5,8 +5,11 @@ langchain-community>=0.0.10
 langchain-openai>=0.0.7
 
 # Vector Database & Embeddings
-chromadb==0.3.21
+chromadb>=0.4.15
 sentence-transformers==2.2.2
+
+# Observability
+langfuse>=2.0.0
 
 # Data Processing
 pandas==2.0.0
