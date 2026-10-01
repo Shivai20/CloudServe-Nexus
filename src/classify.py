@@ -111,7 +111,15 @@ class IntentClassifier:
 
         if texts and labels:
             X = self.vectorizer.fit_transform(texts)
-            self.model.fit(X, labels)
+            try:
+                self.model.fit(X, labels)
+            except ValueError as e:
+                logger.warning(f"CV calibration failed: {e}. Falling back to cv='prefit'.")
+                base_lr = LogisticRegression(C=5.0, max_iter=1000, random_state=42)
+                base_lr.fit(X, labels)
+                self.model = CalibratedClassifierCV(estimator=base_lr, cv="prefit")
+                self.model.fit(X, labels)
+            
             self.is_trained = True
             logger.info(f"Classifier trained on {len(texts)} tickets across {len(set(labels))} intents.")
 
