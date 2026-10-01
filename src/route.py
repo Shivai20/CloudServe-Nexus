@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_DEV_DATA_PATH = os.path.join(
     os.path.dirname(os.path.dirname(__file__)), "data", "development_tickets.json"
 )
-DEFAULT_THRESHOLD = float(os.getenv("CONFIDENCE_THRESHOLD", "0.55"))
+DEFAULT_THRESHOLD = float(os.getenv("CONFIDENCE_THRESHOLD", "0.70"))
 
 
 class RoutingEngine:
@@ -104,7 +104,7 @@ class RoutingEngine:
             )
 
         # 3. EMPIRICAL ROUTING PREDICTION & THRESHOLD GATE
-        # We strictly use the calibrated classification confidence against the operational threshold tau (0.55).
+        # We strictly use the calibrated classification confidence against the operational threshold tau.
         # We do not override it with a secondary model to ensure Low-Confidence intents are properly escalated.
         auto_confidence = classification.confidence
 

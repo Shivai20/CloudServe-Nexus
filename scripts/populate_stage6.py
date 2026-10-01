@@ -2,7 +2,7 @@ import docx
 import os
 
 def populate_effort_log():
-    filepath = 'FDE_Capstone_Complete/Capstone_Pack/04_Submission/Effort_Log.docx'
+    filepath = 'final_deliverables/Documents/Effort_Log.docx'
     doc = docx.Document(filepath)
     
     # Table 1: Details
@@ -78,7 +78,7 @@ def populate_effort_log():
     print(f"Updated {filepath}")
 
 def populate_governance():
-    filepath = 'FDE_Capstone_Complete/Capstone_Pack/03_Reference/Governance_Framework.docx'
+    filepath = 'final_deliverables/Documents/Governance_Framework.docx'
     doc = docx.Document(filepath)
 
     # Table 2: Risk Register

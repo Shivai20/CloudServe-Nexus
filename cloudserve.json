@@ -12,20 +12,20 @@
     ]
   },
   "components": [
-    { "id": "users", "type": "external", "label": "Users", "sublabel": "Email, Chat, Forum", "pos": [40, 300], "size": [120, 60] },
+    { "id": "users", "type": "external", "label": "Users", "sublabel": "Email, Chat, Docs, Forum", "pos": [40, 300], "size": [120, 60] },
     { "id": "api", "type": "backend", "label": "FastAPI Server", "sublabel": "POST /tickets", "pos": [250, 300], "size": [130, 60] },
-    { "id": "ingest", "type": "backend", "label": "Ingestion", "sublabel": "src/ingest.py", "pos": [460, 300], "size": [130, 60] },
-    { "id": "classify", "type": "backend", "label": "Classification", "sublabel": "src/classify.py", "pos": [670, 300], "size": [130, 60], "tag": "LLM" },
-    { "id": "retrieve", "type": "backend", "label": "Retrieval", "sublabel": "src/retrieve.py", "pos": [880, 300], "size": [130, 60] },
-    { "id": "kb", "type": "database", "label": "Vector DB", "sublabel": "Docs Chunks", "pos": [880, 150], "size": [130, 60] },
-    { "id": "route", "type": "backend", "label": "Routing Engine", "sublabel": "src/route.py", "pos": [1090, 300], "size": [130, 60], "tag": "tau=0.55" },
-    { "id": "generate", "type": "backend", "label": "Generation", "sublabel": "src/generate.py", "pos": [1300, 300], "size": [130, 60], "tag": "Grounded" },
-    { "id": "guardrails", "type": "security", "label": "Guardrails", "sublabel": "src/guardrails.py", "pos": [1510, 300], "size": [130, 60], "tag": "PII / Redlines" },
+    { "id": "ingest", "type": "backend", "label": "Ingest Node", "sublabel": "src/ingest.py", "pos": [460, 300], "size": [130, 60] },
+    { "id": "classify", "type": "backend", "label": "Classify Node", "sublabel": "src/classify.py", "pos": [670, 300], "size": [130, 60], "tag": "LLM" },
+    { "id": "retrieve", "type": "backend", "label": "Retrieve Node", "sublabel": "src/retrieve.py", "pos": [880, 300], "size": [130, 60] },
+    { "id": "kb", "type": "database", "label": "ChromaDB", "sublabel": "Docs Chunks", "pos": [880, 150], "size": [130, 60] },
+    { "id": "route", "type": "backend", "label": "Route Node", "sublabel": "src/route.py", "pos": [1090, 300], "size": [130, 60], "tag": "tau=0.70" },
+    { "id": "generate", "type": "backend", "label": "Generate Node", "sublabel": "src/generate.py", "pos": [1300, 300], "size": [130, 60], "tag": "Grounded" },
+    { "id": "guardrails", "type": "security", "label": "Guardrails Node", "sublabel": "src/guardrails.py", "pos": [1510, 300], "size": [130, 60], "tag": "PII / Redlines" },
     { "id": "human", "type": "external", "label": "Human Agent", "sublabel": "Tier-3 Support", "pos": [1090, 500], "size": [130, 60] },
-    { "id": "audit_log", "type": "database", "label": "Audit Store", "sublabel": "SQLite / JSONL", "pos": [1300, 650], "size": [130, 60] }
+    { "id": "audit_log", "type": "database", "label": "Log Node", "sublabel": "SQLite / JSONL", "pos": [1300, 650], "size": [130, 60] }
   ],
   "boundaries": [
-    { "kind": "region", "label": "Support Pipeline Graph", "wraps": ["ingest", "classify", "retrieve", "route", "generate", "guardrails"] }
+    { "kind": "region", "label": "LangGraph Orchestration (StateGraph)", "wraps": ["ingest", "classify", "retrieve", "route", "generate", "guardrails"] }
   ],
   "connections": [
     { "id": "user-req", "from": "users", "to": "api", "label": "Request", "variant": "emphasis" },

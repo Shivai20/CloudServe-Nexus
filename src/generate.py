@@ -16,6 +16,7 @@ from src.models import (
     NormalizedTicket,
     RetrievedChunk,
     RoutingAction,
+    RoutingDecision,
 )
 from dotenv import load_dotenv
 
@@ -76,6 +77,18 @@ class GroundedGenerator:
             is_grounded=True,
             grounding_notes="LLM providers offline. Graceful escalation triggered (A11).",
         )
+
+    def draft_escalation_summary(
+        self, ticket: NormalizedTicket, routing_decision: RoutingDecision
+    ) -> str:
+        """Drafts a short summary for the human agent when escalating."""
+        summary = (
+            f"--- ESCALATION SUMMARY ---\n"
+            f"Customer: {ticket.customer_name} ({ticket.customer_tier})\n"
+            f"Reason for escalation: {routing_decision.reason}\n\n"
+            f"Original Request Summary:\n{ticket.full_text[:300]}..."
+        )
+        return summary
 
     def _call_llm(
         self, ticket: NormalizedTicket, retrieved_chunks: List[RetrievedChunk],

@@ -10,3 +10,25 @@ evaluation/results/*.json
 
 .agents/
 CloudServe_Engineer_Capstone_Submission/
+
+# Ignore virtual environments
+venv/
+.venv/
+**/venv/
+
+# Ignore deliverables, videos, reports, and scratch files
+final_deliverables/
+langragh_version_final/01_Video/
+langragh_version_final/02_Report/
+docs/*.pptx
+docs/*.docx
+*.pdf
+*.docx
+*.mp4
+*.mkv
+scratch_*.txt
+*.log
+
+# Ignore IDE/tooling
+.archify/
+skills-lock.json

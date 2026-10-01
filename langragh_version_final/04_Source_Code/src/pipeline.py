@@ -9,6 +9,7 @@ Ensures fault tolerance and graceful degradation under all failure modes.
 from typing import Any, Dict, List, Optional, TypedDict
 import logging
 import uuid
+import os
 from langgraph.graph import StateGraph, END
 from src.classify import get_classifier
 from src.generate import get_generator
@@ -218,11 +219,31 @@ class SupportPipeline:
         }
 
         try:
+            # Optional Langfuse Integration
+            callbacks = []
+            if os.getenv("LANGFUSE_PUBLIC_KEY") and os.getenv("LANGFUSE_SECRET_KEY"):
+                try:
+                    from langfuse.callback import CallbackHandler
+                    langfuse_handler = CallbackHandler()
+                    callbacks.append(langfuse_handler)
+                    logger.info("Langfuse callback handler initialized successfully.")
+                except ImportError:
+                    logger.warning("Langfuse credentials found but langfuse package is not installed.")
+                except Exception as e:
+                    logger.warning(f"Failed to initialize Langfuse callback: {e}")
+
             # Run LangGraph pipeline
-            final_state = self.graph.invoke(initial_state)
+            final_state = self.graph.invoke(initial_state, config={"callbacks": callbacks})
             
             # Extract outputs
             ticket = final_state["ticket"]
+            # Optional Langfuse flush
+            if 'langfuse_handler' in locals():
+                try:
+                    langfuse_handler.flush()
+                except Exception as e:
+                    logger.warning(f"Failed to flush langfuse: {e}")
+
             return ProcessedTicketOutput(
                 ticket_id=ticket.ticket_id,
                 channel=ticket.channel.value,

@@ -6,24 +6,24 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
 # Load development tickets to verify figures
-with open(r'FDE_Capstone_Complete/Capstone_Pack/05_Datasets/development_tickets.json') as f:
+with open(r'data/development_tickets.json') as f:
     tickets = json.load(f)
 
 N = len(tickets)
-answerable_cnt = sum(1 for t in tickets if t['labels']['answerable_from_docs'])
-must_not_cnt = sum(1 for t in tickets if t['labels']['must_not_auto_respond'])
-auto_route_cnt = sum(1 for t in tickets if t['labels']['expected_route'] == 'auto_respond')
-escalate_route_cnt = sum(1 for t in tickets if t['labels']['expected_route'] == 'escalate')
-actual_esc_cnt = sum(1 for t in tickets if t['history']['escalated'])
-actual_fcr_cnt = sum(1 for t in tickets if t['history']['first_contact_resolution'])
-avg_res_time = sum(t['history']['resolution_time_minutes'] for t in tickets) / N
-avg_csat = sum(t['history']['csat_rating'] for t in tickets if t['history']['csat_rating'] is not None) / N
-repeat_cnt = sum(1 for t in tickets if t['history'].get('repeat_contact', False))
+answerable_cnt = sum(1 for t in tickets if t.get('labels', {}).get('answerable_from_docs'))
+must_not_cnt = sum(1 for t in tickets if t.get('labels', {}).get('must_not_auto_respond'))
+auto_route_cnt = sum(1 for t in tickets if t.get('labels', {}).get('expected_route') == 'auto_respond')
+escalate_route_cnt = sum(1 for t in tickets if t.get('labels', {}).get('expected_route') == 'escalate')
+actual_esc_cnt = sum(1 for t in tickets if t.get('history', {}).get('escalated'))
+actual_fcr_cnt = sum(1 for t in tickets if t.get('history', {}).get('first_contact_resolution'))
+avg_res_time = sum(t.get('history', {}).get('resolution_time_minutes', 0) for t in tickets) / N
+avg_csat = sum(t.get('history', {}).get('csat_rating', 0) for t in tickets if t.get('history', {}).get('csat_rating') is not None) / N
+repeat_cnt = sum(1 for t in tickets if t.get('history', {}).get('repeat_contact', False))
 
-non_fluent = [t for t in tickets if t['language_fluency'] == 'non_fluent']
-fluent = [t for t in tickets if t['language_fluency'] == 'fluent']
-non_fluent_res = sum(t['history']['resolution_time_minutes'] for t in non_fluent) / len(non_fluent)
-fluent_res = sum(t['history']['resolution_time_minutes'] for t in fluent) / len(fluent)
+non_fluent = [t for t in tickets if t.get('language_fluency') == 'non_fluent']
+fluent = [t for t in tickets if t.get('language_fluency') == 'fluent']
+non_fluent_res = sum(t.get('history', {}).get('resolution_time_minutes', 0) for t in non_fluent) / len(non_fluent) if non_fluent else 0
+fluent_res = sum(t.get('history', {}).get('resolution_time_minutes', 0) for t in fluent) / len(fluent) if fluent else 0
 
 print(f"Data verified: N={N}, answerable={answerable_cnt} ({answerable_cnt/N*100:.1f}%), avg_res={avg_res_time:.1f}m")
 
@@ -39,7 +39,7 @@ def set_cell(cell, text, bold=False):
             run.font.color.rgb = RGBColor(0x22, 0x22, 0x22)
             run.bold = bold
 
-doc_path = r'FDE_Capstone_Complete/Capstone_Pack/02_Stage_Workbooks/Stage_1_Discovery_Workbook.docx'
+doc_path = r'final_deliverables/02_Stage_Workbooks/Stage_1_Discovery_Workbook.docx'
 doc = docx.Document(doc_path)
 
 # ==========================================
