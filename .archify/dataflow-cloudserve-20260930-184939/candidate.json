@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "CloudServe Pipeline Data Flow",
+    "output": "dataflow-cloudserve.html",
+    "viewBox": [1080, 600],
+    "animation": "trace",
+    "quality_profile": "showcase"
+  },
+  "stages": [
+    { "label": "Ingestion" },
+    { "label": "Enrichment" },
+    { "label": "Routing" },
+    { "label": "Execution" },
+    { "label": "Audit Logging" }
+  ],
+  "nodes": [
+    { "id": "ingest", "type": "backend", "label": "Ingestion", "sublabel": "Normalize Ticket", "stage": 0, "row": 1, "tag": "Unified Schema" },
+    { "id": "classify", "type": "cloud", "label": "Classifier", "sublabel": "Intent & Urgency", "stage": 1, "row": 0, "tag": "Confidence Score" },
+    { "id": "retrieve", "type": "database", "label": "Vector Retrieval", "sublabel": "Semantic Search", "stage": 1, "row": 2, "tag": "Top-3 Chunks" },
+    { "id": "guardrail_in", "type": "security", "label": "Input Guardrails", "sublabel": "PII & Toxicity", "stage": 2, "row": 0, "tag": "Safety Check" },
+    { "id": "router", "type": "backend", "label": "Routing Engine", "sublabel": "Deterministic", "stage": 2, "row": 1, "tag": "Threshold Gate" },
+    { "id": "generate", "type": "cloud", "label": "LLM Generation", "sublabel": "Grounded Response", "stage": 3, "row": 0, "tag": "Cited Chunks" },
+    { "id": "guardrail_out", "type": "security", "label": "Outbound Guardrails", "sublabel": "Hallucination Check", "stage": 3, "row": 1, "tag": "Safety Check" },
+    { "id": "escalate", "type": "frontend", "label": "Escalate", "sublabel": "Human Summary", "stage": 3, "row": 2, "tag": "Agent Hand-off" },
+    { "id": "audit", "type": "database", "label": "Audit Store", "sublabel": "1:1 Decision Log", "stage": 4, "row": 1, "tag": "Immutable" }
+  ],
+  "flows": [
+    { "id": "flow-ingest-classify", "from": "ingest", "to": "classify", "label": "raw text", "classification": "inference", "variant": "default" },
+    { "id": "flow-ingest-retrieve", "from": "ingest", "to": "retrieve", "label": "search query", "classification": "embeddings", "variant": "dashed" },
+    { "id": "flow-classify-guardrail", "from": "classify", "to": "guardrail_in", "label": "intent", "classification": "safety check", "variant": "security" },
+    { "id": "flow-guardrail-router", "from": "guardrail_in", "to": "router", "label": "safe/unsafe", "classification": "decision input", "variant": "security", "labelDy": 25 },
+    { "id": "flow-retrieve-router", "from": "retrieve", "to": "router", "label": "chunks", "classification": "context", "variant": "dashed" },
+    { "id": "flow-router-generate", "from": "router", "to": "generate", "label": "auto-respond", "classification": "generation", "variant": "emphasis" },
+    { "id": "flow-router-escalate", "from": "router", "to": "escalate", "label": "escalate", "classification": "human routing", "variant": "default" },
+    { "id": "flow-generate-guardrail", "from": "generate", "to": "guardrail_out", "label": "draft response", "classification": "safety check", "variant": "security", "labelDy": 25 },
+    { "id": "flow-guardrail-audit", "from": "guardrail_out", "to": "audit", "label": "verified response", "classification": "log", "variant": "emphasis", "route": "straight", "labelDy": -25 },
+    { "id": "flow-guardrail-escalate", "from": "guardrail_out", "to": "escalate", "label": "hallucination block", "classification": "fallback", "variant": "dashed", "labelDy": 25 },
+    { "id": "flow-escalate-audit", "from": "escalate", "to": "audit", "label": "escalation summary", "classification": "log", "variant": "default" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Deterministic Routing",
+      "items": [
+        "Classification intent and semantic chunks converge at the Routing Engine",
+        "Threshold checks determine if a ticket can be automatically answered"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Strict Safety Guardrails",
+      "items": [
+        "Input Guardrails check incoming text for PII and toxicity before routing",
+        "Outbound Guardrails prevent hallucinated responses from reaching users, falling back to escalation"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Immutable Audit Trail",
+      "items": [
+        "Every path through the state machine ends at the Audit Store",
+        "A 1:1 decision log is retained regardless of success or failure"
+      ]
+    }
+  ]
+}

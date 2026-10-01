@@ -158,11 +158,12 @@ class SupportPipeline:
     def _node_escalate(self, state: PipelineState) -> Dict[str, Any]:
         # Task 3: Draft a summary for escalated tickets
         try:
-            summary = self.generator.draft_escalation_summary(state["ticket"], state["routing_decision"])
+            summary = self.generator.draft_escalation_summary(state.get("ticket"), state.get("routing_decision"))
             return {"response_text": summary, "citations": []}
         except Exception as e:
-            logger.warning(f"Failed to draft escalation summary: {e}")
-            return {"response_text": None, "citations": []}
+            logger.warning(f"Failed to draft escalation summary in pipeline: {e}")
+            fallback = "--- ESCALATION SUMMARY ---\nAn error occurred while drafting the summary. Please review the raw ticket."
+            return {"response_text": fallback, "citations": []}
 
     def _node_log(self, state: PipelineState) -> Dict[str, Any]:
         ticket = state["ticket"]
@@ -236,6 +237,13 @@ class SupportPipeline:
             
             # Extract outputs
             ticket = final_state["ticket"]
+            # Optional Langfuse flush
+            if 'langfuse_handler' in locals():
+                try:
+                    langfuse_handler.flush()
+                except Exception as e:
+                    logger.warning(f"Failed to flush langfuse: {e}")
+
             return ProcessedTicketOutput(
                 ticket_id=ticket.ticket_id,
                 channel=ticket.channel.value,

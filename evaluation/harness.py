@@ -78,6 +78,8 @@ def run_evaluation(input_path: str, output_dir: str) -> Dict[str, Any]:
         if idx % 20 == 0 or idx == total_tickets:
             logger.info(f"Processed {idx}/{total_tickets} tickets ({idx/total_tickets*100:.1f}%)")
 
+
+        
     total_duration_sec = time.time() - start_total_time
 
     # 4. Verify 1:1 Audit Trail Reconciliation (A8)

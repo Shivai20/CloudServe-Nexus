@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "bfaf3ee1-bb19-4a0c-88da-ec2125fc805a",
+  "status": "current",
+  "command": "deliver",
+  "type": "dataflow",
+  "input": "C:\\Users\\ShErLocK\\Documents\\FDE_Capstone_Complete-20260821T084330Z-1-001\\.archify\\dataflow-cloudserve-20260930-184939\\candidate.json",
+  "output": "C:\\Users\\ShErLocK\\Documents\\FDE_Capstone_Complete-20260821T084330Z-1-001\\.archify\\dataflow-cloudserve-20260930-184939\\dataflow-cloudserve.html",
+  "specification": {
+    "sha256": "70b5c4efec3ebea67c448cb98d23c5adace10408dfc86915873c0e06f63f8c6e",
+    "bytes": 4408
+  },
+  "artifact": {
+    "sha256": "7ae8f57e379ab976de0c7f5338dbe5967267a4da51ffae3322c5cb601d28bfaa",
+    "bytes": 764501
+  }
+}

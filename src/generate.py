@@ -82,13 +82,28 @@ class GroundedGenerator:
         self, ticket: NormalizedTicket, routing_decision: RoutingDecision
     ) -> str:
         """Drafts a short summary for the human agent when escalating."""
-        summary = (
+        customer_name = getattr(ticket, "customer_name", "Unknown")
+        if customer_name is None:
+            customer_name = "Unknown"
+            
+        customer_tier = getattr(ticket, "customer_tier", "standard")
+        if customer_tier is None:
+            customer_tier = "standard"
+            
+        reason = getattr(routing_decision, "reason", "Escalated")
+        
+        # Use full_text if available, otherwise fallback to body
+        try:
+            content = ticket.full_text
+        except Exception:
+            content = getattr(ticket, "body", "")
+            
+        return (
             f"--- ESCALATION SUMMARY ---\n"
-            f"Customer: {ticket.customer_name} ({ticket.customer_tier})\n"
-            f"Reason for escalation: {routing_decision.reason}\n\n"
-            f"Original Request Summary:\n{ticket.full_text[:300]}..."
+            f"Customer: {customer_name} ({customer_tier})\n"
+            f"Reason for escalation: {reason}\n\n"
+            f"Original Request Summary:\n{content[:300]}..."
         )
-        return summary
 
     def _call_llm(
         self, ticket: NormalizedTicket, retrieved_chunks: List[RetrievedChunk],
